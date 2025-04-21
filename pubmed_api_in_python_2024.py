@@ -6,14 +6,14 @@ from Bio import Entrez
 Entrez.email = 'longvu2@gmail.com'
 
 # Define lists of authors and topics
-authors = ['Bryan Holland', 'Mehmet Oz', 'Anthony Fauci']  # Example authors, adjust as needed
-topics = ['RNA', 'cardiovascular']  # Example topics, adjust as needed
+# authors = ['Bryan Holland', 'Mehmet Oz', 'Anthony Fauci']  # Example authors, adjust as needed
+# topics = ['RNA', 'cardiovascular']  # Example topics, adjust as needed
 
 authors = None
 topics = ["SOD1 ALS"]
 # Define date range
 #date_range = '("2012/03/01"[Date - Create] : "2022/12/31"[Date - Create])'
-date_range = None
+date_range = '("1990/01/01"[Date - Create] : "2025/12/31"[Date - Create])'
 
 # Build the query dynamically based on the available authors and topics
 queries = []
@@ -26,14 +26,32 @@ if topics:
     topic_queries = ['{}[Title/Abstract]'.format(topic) for topic in topics]
     queries.append('(' + ' OR '.join(topic_queries) + ')')
 
-queries.append('(free full text[sb])')
+free_full_text = False 
+if free_full_text:
+    queries.append('(free full text[sb])')
+
+# https://pubmed.ncbi.nlm.nih.gov/?term=sod1+als&filter=dates.1990-2025%2F4&filter=simsearch1.fha&filter=pubt.casereports&filter=pubt.clinicalstudy&filter=pubt.comparativestudy&filter=pubt.meta-analysis&filter=pubt.observationalstudy&filter=pubt.review&filter=pubt.systematicreview
+article_types = [
+    "meta-analysis",
+    "observationalstudy",
+    "systematicreview",
+    "comparativestudy",
+    "casereport",
+    "clinicalstudy"
+]
+
+if not article_types:
+   article_type_queries = ['{}[PT]'.format(at) for at in article_types]
+   queries.append('(' + ' OR '.join(article_type_queries) + ')')
 
 full_query = ' AND '.join(queries) 
+
 if date_range:
     full_query = ' AND '.join(queries) + ' AND ' + date_range
 
 # Search PubMed for relevant records
-handle = Entrez.esearch(db='pubmed', retmax=10000, term=full_query)
+#handle = Entrez.esearch(db='pubmed', term=full_query)
+handle = Entrez.esearch(db='pubmed', retmax=10000, term=full_query, use_history="y")
 record = Entrez.read(handle)
 id_list = record['IdList']
 
