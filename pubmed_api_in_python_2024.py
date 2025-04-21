@@ -3,14 +3,17 @@ import json
 from Bio import Entrez
 
 # Set the email address to avoid any potential issues with Entrez
-Entrez.email = 'your.email@example.com'
+Entrez.email = 'longvu2@gmail.com'
 
 # Define lists of authors and topics
 authors = ['Bryan Holland', 'Mehmet Oz', 'Anthony Fauci']  # Example authors, adjust as needed
 topics = ['RNA', 'cardiovascular']  # Example topics, adjust as needed
 
+authors = None
+topics = ["SOD1 ALS"]
 # Define date range
-date_range = '("2012/03/01"[Date - Create] : "2022/12/31"[Date - Create])'
+#date_range = '("2012/03/01"[Date - Create] : "2022/12/31"[Date - Create])'
+date_range = None
 
 # Build the query dynamically based on the available authors and topics
 queries = []
@@ -23,10 +26,14 @@ if topics:
     topic_queries = ['{}[Title/Abstract]'.format(topic) for topic in topics]
     queries.append('(' + ' OR '.join(topic_queries) + ')')
 
-full_query = ' AND '.join(queries) + ' AND ' + date_range
+queries.append('(free full text[sb])')
+
+full_query = ' AND '.join(queries) 
+if date_range:
+    full_query = ' AND '.join(queries) + ' AND ' + date_range
 
 # Search PubMed for relevant records
-handle = Entrez.esearch(db='pubmed', retmax=11, term=full_query)
+handle = Entrez.esearch(db='pubmed', retmax=10000, term=full_query)
 record = Entrez.read(handle)
 id_list = record['IdList']
 
@@ -71,3 +78,4 @@ for pmid in id_list:
 
 # Save DataFrame to an Excel file
 df.to_excel('PubMed_resultsx.xlsx', index=False)
+handle.close()
