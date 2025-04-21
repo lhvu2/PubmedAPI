@@ -26,9 +26,9 @@ if topics:
     topic_queries = ['{}[Title/Abstract]'.format(topic) for topic in topics]
     queries.append('(' + ' OR '.join(topic_queries) + ')')
 
-free_full_text = False 
-if free_full_text:
-    queries.append('(free full text[sb])')
+# free_full_text = "free full text"
+# if free_full_text:
+#     queries.append(f'({free_full_text}[sb])')
 
 # https://pubmed.ncbi.nlm.nih.gov/?term=sod1+als&filter=dates.1990-2025%2F4&filter=simsearch1.fha&filter=pubt.casereports&filter=pubt.clinicalstudy&filter=pubt.comparativestudy&filter=pubt.meta-analysis&filter=pubt.observationalstudy&filter=pubt.review&filter=pubt.systematicreview
 article_types = [
@@ -36,11 +36,12 @@ article_types = [
     "observationalstudy",
     "systematicreview",
     "comparativestudy",
-    "casereport",
-    "clinicalstudy"
+    "casereports",
+    "clinicalstudy",
+    "review"
 ]
 
-if not article_types:
+if article_types:
    article_type_queries = ['{}[PT]'.format(at) for at in article_types]
    queries.append('(' + ' OR '.join(article_type_queries) + ')')
 
